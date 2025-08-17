@@ -11,7 +11,7 @@ api.interceptors.request.use((config) => {
   const token = Cookies.get('XSRF-TOKEN')
   if (token) {
     if (!config.headers) {
-      config.headers = {};
+      config.headers = {} as import('axios').AxiosRequestHeaders;
     }
     config.headers['X-XSRF-TOKEN'] = token;
   }
