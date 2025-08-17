@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-sky-100 to-blue-200 dark:from-gray-900 dark:to-gray-800 px-4 py-10">
     <div class="max-w-5xl mx-auto">
+      <!-- Header -->
       <header class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-blue-700 dark:text-blue-400">Mis Recordatorios</h1>
 
@@ -46,7 +47,6 @@
             <p class="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">
               {{ item.description }}
             </p>
-
             <div class="mt-4 text-xs text-gray-500 dark:text-gray-400">
               📅 {{ new Date(item.remind_at).toLocaleString() }}
             </div>
@@ -96,23 +96,20 @@
       Salir
     </button>
 
-    <!-- MODAL FORM (Crear/Editar) -->
+    <!-- MODALES -->
+    <!-- Modal Form (Crear/Editar) -->
     <Teleport to="body">
       <transition name="fade">
-        <div
-          v-if="showForm"
-          class="fixed inset-0 z-50 flex items-center justify-center"
-        >
+        <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center">
           <div class="absolute inset-0 bg-black/70" @click="showForm = false"></div>
 
-          <div
-            class="relative z-10 w-[95%] max-w-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-xl"
-          >
+          <div class="relative z-10 w-[95%] max-w-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-xl">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
               {{ formMode === 'create' ? 'Nuevo recordatorio' : 'Editar recordatorio' }}
             </h3>
 
             <form @submit.prevent="submitForm" class="space-y-4">
+              <!-- Título -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
                 <input
@@ -126,6 +123,7 @@
                 <p v-if="formErrors.title" class="text-xs text-red-600 mt-1">{{ formErrors.title }}</p>
               </div>
 
+              <!-- Descripción -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                 <textarea
@@ -138,6 +136,7 @@
                 <p v-if="formErrors.description" class="text-xs text-red-600 mt-1">{{ formErrors.description }}</p>
               </div>
 
+              <!-- Fecha -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recordar el</label>
                 <input
@@ -152,6 +151,7 @@
                 <p v-if="formErrors.remind_at" class="text-xs text-red-600 mt-1">{{ formErrors.remind_at }}</p>
               </div>
 
+              <!-- Botones -->
               <div class="flex items-center justify-end gap-3 pt-2">
                 <button
                   type="button"
@@ -173,7 +173,7 @@
       </transition>
     </Teleport>
 
-    <!-- MODAL VER -->
+    <!-- Modal Ver -->
     <Teleport to="body">
       <transition name="fade">
         <div v-if="showView && viewItem" class="fixed inset-0 z-50 flex items-center justify-center">
@@ -186,17 +186,16 @@
               <p v-if="viewItem.created_at"><strong>Creado:</strong> {{ new Date(viewItem.created_at).toLocaleString() }}</p>
             </div>
             <div class="mt-6 text-right">
-              <button
-                class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white"
-                @click="showView = false"
-              >Cerrar</button>
+              <button class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white" @click="showView = false">
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
       </transition>
     </Teleport>
 
-    <!-- MODAL ELIMINAR -->
+    <!-- Modal Eliminar -->
     <Teleport to="body">
       <transition name="fade">
         <div v-if="showDelete && deleteTarget" class="fixed inset-0 z-50 flex items-center justify-center">
@@ -210,25 +209,31 @@
               <button
                 class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
                 @click="showDelete = false"
-              >Cancelar</button>
+              >
+                Cancelar
+              </button>
               <button
                 class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white"
                 @click="confirmDelete"
-              >Eliminar</button>
+              >
+                Eliminar
+              </button>
             </div>
           </div>
         </div>
       </transition>
     </Teleport>
+
+    <!-- Botón instalar PWA -->
+    <InstallButton variant="inline" label="Instalar Tags" />
   </div>
-  <InstallButton variant="inline" label="Instalar Tags" />
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import InstallButton from '@/components/InstallButton.vue'
 import api from '@/services/api'
+import InstallButton from '@/components/InstallButton.vue'
 
 interface Reminder {
   id: number
@@ -254,12 +259,7 @@ const error = ref<string | null>(null)
 
 const showForm = ref(false)
 const formMode = ref<'create' | 'edit'>('create')
-const form = reactive<FormState>({
-  id: null,
-  title: '',
-  description: '',
-  remind_at: ''
-})
+const form = reactive<FormState>({ id: null, title: '', description: '', remind_at: '' })
 const formErrors = ref<Record<string, string>>({})
 
 const showView = ref(false)
@@ -270,27 +270,17 @@ const deleteTarget = ref<Reminder | null>(null)
 
 const nowLocal = computed(() => toDatetimeLocal(new Date()))
 
-onMounted(async () => {
-  await fetchReminders()
-})
+onMounted(fetchReminders)
 
 /** Utils */
 function toDatetimeLocal(d: Date) {
   const pad = (n: number) => n.toString().padStart(2, '0')
-  const yyyy = d.getFullYear()
-  const mm = pad(d.getMonth() + 1)
-  const dd = pad(d.getDate())
-  const hh = pad(d.getHours())
-  const mi = pad(d.getMinutes())
-  return `${yyyy}-${mm}-${dd}T${hh}:${mi}`
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
-
 function localInputToISO(local: string) {
   const date = new Date(local)
-  if (Number.isNaN(date.getTime())) return new Date().toISOString()
-  return date.toISOString()
+  return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString()
 }
-
 function resetForm() {
   form.id = null
   form.title = ''
@@ -298,14 +288,10 @@ function resetForm() {
   form.remind_at = nowLocal.value
   formErrors.value = {}
 }
-
-function unwrapOne<T = any>(respData: any): T {
-  return (respData?.data && typeof respData.data === 'object' && !Array.isArray(respData.data))
-    ? respData.data as T
-    : (respData as T)
+function unwrapOne<T>(respData: any): T {
+  return (respData?.data && typeof respData.data === 'object' && !Array.isArray(respData.data)) ? respData.data as T : respData as T
 }
-
-function unwrapList<T = any>(respData: any): T[] {
+function unwrapList<T>(respData: any): T[] {
   if (Array.isArray(respData)) return respData as T[]
   if (Array.isArray(respData?.data)) return respData.data as T[]
   if (Array.isArray(respData?.data?.data)) return respData.data.data as T[]
@@ -326,53 +312,22 @@ async function fetchReminders() {
     loading.value = false
   }
 }
-
-function openCreate() {
-  formMode.value = 'create'
-  resetForm()
-  showForm.value = true
-}
-
-function openEdit(item: Reminder) {
-  formMode.value = 'edit'
-  form.id = item.id
-  form.title = item.title
-  form.description = item.description ?? ''
-  form.remind_at = toDatetimeLocal(new Date(item.remind_at))
-  formErrors.value = {}
-  showForm.value = true
-}
-
-function openView(item: Reminder) {
-  viewItem.value = item
-  showView.value = true
-}
-
-function openDelete(item: Reminder) {
-  deleteTarget.value = item
-  showDelete.value = true
-}
+function openCreate() { formMode.value = 'create'; resetForm(); showForm.value = true }
+function openEdit(item: Reminder) { formMode.value = 'edit'; form.id = item.id; form.title = item.title; form.description = item.description ?? ''; form.remind_at = toDatetimeLocal(new Date(item.remind_at)); formErrors.value = {}; showForm.value = true }
+function openView(item: Reminder) { viewItem.value = item; showView.value = true }
+function openDelete(item: Reminder) { deleteTarget.value = item; showDelete.value = true }
 
 async function submitForm() {
   formErrors.value = {}
-
-  const payload = {
-    title: form.title.trim(),
-    description: form.description.trim(),
-    remind_at: localInputToISO(form.remind_at),
-  }
+  const payload = { title: form.title.trim(), description: form.description.trim(), remind_at: localInputToISO(form.remind_at) }
 
   try {
     if (formMode.value === 'create') {
       const { data } = await api.post('/api/reminders', payload)
-      const created = unwrapOne<Reminder>(data)
-      if (created?.id) reminders.value.unshift(created)
+      reminders.value.unshift(unwrapOne<Reminder>(data))
       ;(window as any).$toast?.success?.('Recordatorio creado')
     } else {
-      if (form.id == null || Number.isNaN(Number(form.id))) {
-        ;(window as any).$toast?.error?.('ID del recordatorio no definido')
-        return
-      }
+      if (!form.id) return (window as any).$toast?.error?.('ID del recordatorio no definido')
       const id = Number(form.id)
       const { data } = await api.put(`/api/reminders/${id}`, payload)
       const updated = unwrapOne<Reminder>(data)
@@ -382,21 +337,13 @@ async function submitForm() {
     }
     showForm.value = false
   } catch (e: any) {
-    console.error('STATUS', e?.response?.status)
-    console.error('DATA', e?.response?.data)
-    console.error('ERRORS', e?.response?.data?.errors)
+    console.error(e)
     formErrors.value = e?.response?.data?.errors ?? {}
-    if (e?.response?.status !== 422) {
-      ;(window as any).$toast?.error?.('No se pudo guardar el recordatorio')
-    }
+    if (e?.response?.status !== 422) (window as any).$toast?.error?.('No se pudo guardar el recordatorio')
   }
 }
-
 async function confirmDelete() {
-  if (!deleteTarget.value?.id || Number.isNaN(Number(deleteTarget.value.id))) {
-    ;(window as any).$toast?.error?.('ID no definido para eliminar')
-    return
-  }
+  if (!deleteTarget.value?.id) return (window as any).$toast?.error?.('ID no definido para eliminar')
   const id = Number(deleteTarget.value.id)
   try {
     await api.delete(`/api/reminders/${id}`)
@@ -409,7 +356,6 @@ async function confirmDelete() {
     showDelete.value = false
   }
 }
-
 async function logout() {
   try {
     await api.post('/logout')

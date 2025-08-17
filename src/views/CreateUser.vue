@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-sky-100 dark:bg-gray-900 px-4">
+  <div class="min-h-screen flex flex-col items-center justify-center bg-sky-100 dark:bg-gray-900 px-4">
     <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-sm transition-all">
       <h2 class="text-2xl font-bold mb-6 text-center text-blue-700 dark:text-blue-400">
         Crear usuario
@@ -92,7 +92,10 @@
       </form>
     </div>
 
-    <InstallButton variant="inline" label="Instalar Tags" />
+    <!-- Botón de instalar app, centrado y con separación -->
+    <div class="mt-6 w-full max-w-sm flex justify-center">
+      <InstallButton variant="inline" label="Instalar Tags" />
+    </div>
   </div>
 </template>
 
@@ -128,7 +131,6 @@ function buildStatusLine(status?: number, statusText?: string): string {
 }
 
 function friendlyMessage(status?: number, data?: unknown): string {
-  // Mensajes más claros según código
   switch (status) {
     case 419: return 'La sesión CSRF ha caducado. Recarga la página e inténtalo de nuevo.'
     case 401: return 'No autorizado para realizar esta acción.'
@@ -140,7 +142,6 @@ function friendlyMessage(status?: number, data?: unknown): string {
     case 500: return 'Error interno del servidor al crear el usuario.'
     case 503: return 'El servicio no está disponible temporalmente.'
     default:
-      // Si el backend manda un message, úsalo
       const msg = (data as any)?.message
       return msg || 'Error inesperado al crear el usuario.'
   }
@@ -156,8 +157,8 @@ const createUser = async () => {
   fieldErrors.name = fieldErrors.email = fieldErrors.password = undefined
 
   try {
-    // CSRF (si usas Sanctum por cookies)
-    await api.get('/sanctum/csrf-cookie')
+    // OJO: si usas Sanctum SPA con cookies, mantén esta línea SOLO si la ruta lo requiere
+    // await api.get('/sanctum/csrf-cookie')
 
     await api.post('/users', {
       name: name.value,
@@ -167,7 +168,6 @@ const createUser = async () => {
 
     router.push('/reminders')
   } catch (err: unknown) {
-    // Tipar respuesta Axios sin usar any
     type AxiosLike = {
       message?: string
       response?: {
@@ -186,7 +186,6 @@ const createUser = async () => {
     statusLine.value = buildStatusLine(status, statusText)
     requestId.value = e?.response?.headers?.['x-request-id'] ?? ''
 
-    // Si hay validaciones del backend
     if (status === 422 && data?.errors) {
       fieldErrors.name = data.errors.name?.[0]
       fieldErrors.email = data.errors.email?.[0]

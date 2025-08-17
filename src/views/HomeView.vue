@@ -5,6 +5,7 @@
     <h1 class="text-4xl sm:text-5xl font-bold mb-6 animate-fade-in-up text-center">
       Bienvenido a <span class="text-blue-600 dark:text-blue-400">Tags</span>
     </h1>
+
     <p class="text-lg text-gray-600 dark:text-gray-300 mb-10 text-center animate-fade-in delay-200">
       Tu gestor inteligente de recordatorios
     </p>
@@ -18,17 +19,21 @@
 
     <RouterLink
       to="/signup"
-      class="animate-fade-in-up delay-300 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 dark:hover:bg-blue-500 transition"
+      class="animate-fade-in-up delay-400 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 dark:hover:bg-blue-500 transition"
     >
-      ¡Unete ahora!
+      ¡Únete ahora!
     </RouterLink>
+
+    <!-- Botón instalar app -->
+    <div class="mt-8 w-full max-w-sm flex justify-center animate-fade-in-up delay-500">
+      <InstallButton variant="inline" label="Instalar Tags" />
+    </div>
   </div>
-  <InstallButton variant="inline" label="Instalar Tags" />
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
-import InstallButton from '@/components/InstallButton.vue';
+import { RouterLink } from 'vue-router'
+import InstallButton from '@/components/InstallButton.vue'
 </script>
 
 <style scoped>
@@ -42,7 +47,6 @@ import InstallButton from '@/components/InstallButton.vue';
     transform: translateY(0);
   }
 }
-
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out;
 }
@@ -55,7 +59,6 @@ import InstallButton from '@/components/InstallButton.vue';
     opacity: 1;
   }
 }
-
 .animate-fade-in {
   animation: fade-in 1s ease-out;
 }
