@@ -165,6 +165,11 @@ const createUser = async () => {
       password: password.value,
     })
 
+    await api.post('/login', {
+      email: email.value,
+      password: password.value,
+    })
+
     router.push('/reminders')
   } catch (err: unknown) {
     type AxiosLike = {
