@@ -159,7 +159,7 @@ const createUser = async () => {
   try {
 
     await api.get('/sanctum/csrf-cookie')
-    await api.post('/users', {
+    await api.post('/api/users', {
       name: name.value,
       email: email.value,
       password: password.value,
