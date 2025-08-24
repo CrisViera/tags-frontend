@@ -157,9 +157,8 @@ const createUser = async () => {
   fieldErrors.name = fieldErrors.email = fieldErrors.password = undefined
 
   try {
-    // OJO: si usas Sanctum SPA con cookies, mantén esta línea SOLO si la ruta lo requiere
-    // await api.get('/sanctum/csrf-cookie')
 
+    await api.get('/sanctum/csrf-cookie')
     await api.post('/users', {
       name: name.value,
       email: email.value,
