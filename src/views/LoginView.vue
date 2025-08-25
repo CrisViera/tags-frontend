@@ -12,6 +12,7 @@
           <input
             type="email"
             v-model="email"
+            placeholder="ejemplo@correo.com"
             class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             required
           />
