@@ -60,36 +60,44 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import api from '@/services/api'
 import InstallButton from '@/components/InstallButton.vue'
+import { useSession } from '@/stores/session' // <-- importante
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
+
 const router = useRouter()
+const route = useRoute()
+const { ensureSession } = useSession()
 
 const login = async () => {
   loading.value = true
   error.value = ''
 
   try {
-    // Paso 1: pedir cookie CSRF
     await api.get('/sanctum/csrf-cookie')
 
-    // Paso 2: login
-    await api.post('/login', {
+    // 2) Login correcto contra tu API
+    await api.post('/api/login', {
       email: email.value,
       password: password.value,
     })
 
-    // Paso 3: redirigir
-    router.push('/reminders')
+    await ensureSession()
+
+    const redirect = (route.query.redirect as string) || '/reminders'
+    router.push(redirect)
   } catch (err: any) {
     console.error(err)
-    if (err.response?.status === 401) {
+    const status = err?.response?.status
+    if (status === 401) {
       error.value = 'Correo o contraseña incorrectos.'
+    } else if (status === 419) {
+      error.value = 'Sesión CSRF expirada. Refresca la página e inténtalo de nuevo.'
     } else {
       error.value = 'Error inesperado al iniciar sesión.'
     }
