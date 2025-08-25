@@ -234,6 +234,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import InstallButton from '@/components/InstallButton.vue'
+import { useSession } from '@/stores/session'
 
 interface Reminder {
   id: number
@@ -252,6 +253,7 @@ type FormState = {
 }
 
 const router = useRouter()
+const { setUser } = useSession()
 
 const reminders = ref<Reminder[]>([])
 const loading = ref(true)
@@ -356,9 +358,11 @@ async function confirmDelete() {
     showDelete.value = false
   }
 }
+
 async function logout() {
   try {
-    await api.post('/logout')
+    await api.post('/api/logout')
+    setUser(null)
     ;(window as any).$toast?.success?.('Sesión cerrada')
     router.push('/login')
   } catch (e) {
@@ -367,7 +371,6 @@ async function logout() {
   }
 }
 </script>
-
 <style scoped>
 .fade-enter-active, .fade-leave-active { transition: opacity .2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
